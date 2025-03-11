@@ -265,7 +265,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	if (metronomeRunning) {
             onClickStopButton();
-            onClickStartButton();
         }
     }
 

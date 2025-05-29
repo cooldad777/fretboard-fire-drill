@@ -1,9 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
+
     const notes = [
         "C", "C#", "Db", "D", "D#", "Eb", "E", "F", "F#", "Gb",
         "G", "G#", "Ab", "A", "A#", "Bb", "B"
     ];
-    const strings = ["E", "A", "D", "G", "B", "e"];
+
+    let strings = ["E", "A", "D", "G", "B", "e"];
     let drillRunning = false;
     let metronomeRunning = false;
     let duration = 2.4; // Default to 25 BPM
@@ -34,6 +36,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const tempoSlider = document.getElementById('tempoSlider');
     const muteSoundCheckbox = document.getElementById('muteSound');
     const reverseLayoutCheckbox = document.getElementById('reverseLayout');
+    const includeHighECheckbox = document.getElementById('includeHighE');
+    const includeACheckbox = document.getElementById('includeA');
+    const includeDCheckbox = document.getElementById('includeD');
+    const includeGCheckbox = document.getElementById('includeG');
+    const includeBCheckbox = document.getElementById('includeB');
+    const includeLowECheckbox = document.getElementById('includeLowE');
 
     const tickSound = new Audio('punchy-rim-click-trap-type.mp3');
     const clickSound = new Audio('click-sound.wav');
@@ -234,6 +242,34 @@ document.addEventListener('DOMContentLoaded', () => {
         return selectedNote;
     }
 
+    function updateIncludedStrings() {
+	stringsBefore = strings.slice();
+        strings = [];
+
+	if (includeLowECheckbox.checked) strings.push("E");
+	if (includeACheckbox.checked) strings.push("A");
+	if (includeDCheckbox.checked) strings.push("D");
+	if (includeGCheckbox.checked) strings.push("G");
+	if (includeBCheckbox.checked) strings.push("B");
+	if (includeHighECheckbox.checked) strings.push("e");
+
+        if (strings.length === 0) {
+	    strings = stringsBefore;
+	    includeLowECheckbox.checked = (stringsBefore[0] == "E");
+	    includeACheckbox.checked = (stringsBefore[0] == "A");
+	    includeDCheckbox.checked = (stringsBefore[0] == "D");
+	    includeGCheckbox.checked = (stringsBefore[0] == "G");
+	    includeBCheckbox.checked = (stringsBefore[0] == "B");
+	    includeHighECheckbox.checked = (stringsBefore[0] == "e");
+        }
+
+	if (metronomeRunning) {
+            onClickStopButton();
+        }
+    }
+
+    updateIncludedStrings();
+
     function updateDisplay() {
         if (reverseLayoutCheckbox.checked) {
             currentNoteLabel.textContent = "String:";
@@ -355,7 +391,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateDisplay();
     }
 
-    startButton.addEventListener('click', () => {
+    function onClickStartButton() {
         if (!drillRunning) {
             playClickSound();
             drillRunning = true;
@@ -363,15 +399,17 @@ document.addEventListener('DOMContentLoaded', () => {
             bpmElement.textContent = Math.round(60 / duration) + " BPM";
             startMetronome();
         }
-    });
+    }
+    startButton.addEventListener('click', () => onClickStartButton());
 
-    stopButton.addEventListener('click', () => {
+    function onClickStopButton() {
         if (drillRunning) {
             playClickSound();
             drillRunning = false;
             stopMetronome();
         }
-    });
+    }
+    stopButton.addEventListener('click', () => onClickStopButton());
 
     tempoSlider.addEventListener('input', () => {
         duration = (60 / 25 - 60 / 200) * (9.9 - parseFloat(tempoSlider.value)) / (9.9 - 8) + 60 / 200;
@@ -395,5 +433,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     reverseLayoutCheckbox.addEventListener('change', () => {
         updateDisplay();
+    });
+
+    includeLowECheckbox.addEventListener('change', () => {
+        updateIncludedStrings();
+    });
+    includeACheckbox.addEventListener('change', () => {
+        updateIncludedStrings();
+    });
+    includeDCheckbox.addEventListener('change', () => {
+        updateIncludedStrings();
+    });
+    includeGCheckbox.addEventListener('change', () => {
+        updateIncludedStrings();
+    });
+    includeBCheckbox.addEventListener('change', () => {
+        updateIncludedStrings();
+    });
+    includeHighECheckbox.addEventListener('change', () => {
+        updateIncludedStrings();
     });
 });
